@@ -42,7 +42,7 @@
                   <Insets bottom="5.0" top="5.0" />
                </padding>
             </VBox>
-            <ScrollPane prefHeight="450.0" prefWidth="300.0" styleClass="transparent" stylesheets="@menu-style.css">
+            <ScrollPane fitToWidth="true" prefHeight="450.0" prefWidth="300.0" styleClass="transparent" stylesheets="@menu-style.css">
                <content>
                   <VBox fx:id="cartItemsContainer" prefWidth="280.0" spacing="10.0">
                      <padding>
@@ -157,61 +157,65 @@
                   </HBox>
                   <AnchorPane prefHeight="660.0" prefWidth="880.0">
                      <children>
-                        <HBox fx:id="menuTypesContainer" prefHeight="60.0" prefWidth="880.0" spacing="10.0" alignment="CENTER" styleClass="category-container" stylesheets="@menu-style.css">
-                           <children>
-                              <Button fx:id="allCategoryBtn" mnemonicParsing="false" styleClass="category-btn,active" stylesheets="@menu-style.css" text="All">
-                                 <HBox.margin>
-                                    <Insets left="15.0" right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Burger">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Coffee">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Drinks">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Italian">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Mexican">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Chinese">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Hotdog">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Snack">
-                                 <HBox.margin>
-                                    <Insets right="5.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Offer menu">
-                                 <HBox.margin>
-                                    <Insets right="15.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <ScrollPane layoutY="60.0" prefHeight="600.0" prefWidth="880.0" styleClass="transparent" stylesheets="@menu-style.css">
+                        <ScrollPane fitToWidth="true" prefHeight="60.0" prefWidth="880.0" styleClass="transparent" stylesheets="@menu-style.css">
+                           <content>
+                              <HBox fx:id="menuTypesContainer" prefHeight="60.0" prefWidth="880.0" spacing="10.0" alignment="CENTER" styleClass="category-container" stylesheets="@menu-style.css">
+                                 <children>
+                                    <Button fx:id="allCategoryBtn" mnemonicParsing="false" styleClass="category-btn,active" stylesheets="@menu-style.css" text="All">
+                                       <HBox.margin>
+                                          <Insets left="15.0" right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Burger">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Coffee">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Drinks">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Italian">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Mexican">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Chinese">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Hotdog">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Snack">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" styleClass="category-btn" stylesheets="@menu-style.css" text="Offer menu">
+                                       <HBox.margin>
+                                          <Insets right="15.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fitToWidth="true" layoutY="60.0" prefHeight="600.0" prefWidth="880.0" styleClass="transparent" stylesheets="@menu-style.css">
                            <content>
                               <FlowPane fx:id="menuItemsContainer" hgap="20.0" prefHeight="600.0" prefWidth="880.0" vgap="20.0">
                                  <padding>
