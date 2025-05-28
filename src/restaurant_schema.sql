@@ -69,15 +69,18 @@ CREATE TABLE Customer (
     to_deliver BOOLEAN DEFAULT FALSE
 );
 
--- Create Order table
+-- Create Order table (Updated to include kitchen_id and notes)
 CREATE TABLE `Order` (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
     status VARCHAR(50) NOT NULL,
     date DATE NOT NULL,
     customer_id INT,
     staff_id VARCHAR(50),
+    kitchen_id INT,
+    notes TEXT,
     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-    FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
+    FOREIGN KEY (staff_id) REFERENCES Staff(staff_id),
+    FOREIGN KEY (kitchen_id) REFERENCES Staff(kitchen_id)
 );
 
 -- Create Order_Items table (simplified)
@@ -98,6 +101,16 @@ CREATE TABLE feedback (
     comment TEXT NOT NULL,
     rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     submission_date TIMESTAMP NOT NULL
+);
+
+-- Create MenuItem_Ingredient table to track ingredients used in menu items
+CREATE TABLE MenuItem_Ingredient (
+    item_id INT,
+    ingredient_title VARCHAR(100),
+    quantity DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (item_id, ingredient_title),
+    FOREIGN KEY (item_id) REFERENCES MenuItem(item_id),
+    FOREIGN KEY (ingredient_title) REFERENCES Ingredient(title)
 );
 
 -- Create trigger to update ingredient quantities when orders are placed

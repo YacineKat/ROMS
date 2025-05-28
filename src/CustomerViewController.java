@@ -12,7 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -286,48 +285,11 @@ public class CustomerViewController implements Initializable {
         try {
             // Load menu items from database
             menuItems = menuItemDAO.getAllMenuItems();
-
-            // If database returned no items, load sample items for testing
-            // if (menuItems.isEmpty()) {
-            // loadSampleMenuItems();
-            // }
         } catch (Exception e) {
             System.err.println("Error loading menu items from database: " + e.getMessage());
             e.printStackTrace();
-
-            // Fall back to sample data if database fails
-            // loadSampleMenuItems();
         }
     }
-
-    // Load sample menu items for testing purposes
-    // private void loadSampleMenuItems() {
-    // menuItems.add(new MenuItem(1, "Cappuccino", 4.95, "Coffee",
-    // "images/cappuccino-jpg-.png"));
-    // menuItems.add(new MenuItem(2, "Mushroom Pizza", 9.95, "Italian",
-    // "images/mushroom-pizza-jpg-.png"));
-    // menuItems.add(new MenuItem(3, "Tacos Salsa", 5.95, "Mexican",
-    // "images/tacos-jpg-.png"));
-    // menuItems.add(new MenuItem(4, "Meat burger", 5.95, "Burger",
-    // "images/meat-burger-jpg-.png"));
-    // menuItems.add(new MenuItem(5, "Fresh melon juice", 3.95, "Drinks",
-    // "images/melon-juice-jpg-.png"));
-    // menuItems.add(
-    // new MenuItem(6, "Vegetable salad", 4.95, "Snack",
-    // "images/users-icon-png-vegetable-salad-jpg.png"));
-    // menuItems.add(new MenuItem(7, "Black chicken Burger", 6.95, "Burger",
-    // "images/black-chicken-jpg-.png"));
-    // menuItems.add(new MenuItem(8, "Bakso Kuah sapi", 5.95, "Soup",
-    // "images/bakso-jpg-.png"));
-    // menuItems.add(new MenuItem(9, "Italian Pizza", 9.95, "Italian",
-    // "images/italian-pizza-jpg-.png"));
-    // menuItems.add(new MenuItem(10, "Sausage Pizza", 8.95, "Italian",
-    // "images/sausage-pizza-jpg-.png"));
-    // menuItems.add(new MenuItem(11, "Seafood Paella", 12.95, "Seafood",
-    // "images/seafood-paella-jpg-.png"));
-    // menuItems.add(new MenuItem(12, "Ranch Burger", 7.95, "Burger",
-    // "images/ranch-burger-jpg-.png"));
-    // }
 
     private void addToCart(MenuItem item, int quantity) {
         CartItem cartItem = cartItems.get(item.getId());
@@ -428,8 +390,57 @@ public class CustomerViewController implements Initializable {
     }
 
     @FXML
-    void placeOrder(ActionEvent event) {
-        handlePlaceOrder();
+    private void placeOrder() {
+        if (cartItems.isEmpty()) {
+            showAlert("Error", "Your cart is empty. Please add items before placing an order.");
+            return;
+        }
+
+        String deliveryPartner = deliveryPartnerComboBox.getValue();
+        if (deliveryPartner == null || deliveryPartner.isEmpty()) {
+            showAlert("Error", "Please select a delivery partner.");
+            return;
+        }
+
+        // Create a new customer
+        CustomerDAO customerDAO = new CustomerDAO();
+        boolean isDelivery = !deliveryPartner.equals("Self Pickup");
+        int customerId = customerDAO.createCustomer(null, null, isDelivery);
+        
+        if (customerId == -1) {
+            showAlert("Error", "Failed to create customer record. Please try again.");
+            return;
+        }
+
+        // Create new order
+        List<CartItem> cartItemsList = new ArrayList<>(cartItems.values());
+        Order order = new Order(cartItemsList, getTotal(), deliveryPartner, notesTextArea.getText());
+        order.setCustomerId(customerId);
+        
+        // Save order to database
+        OrderDAO orderDAO = new OrderDAO();
+        int orderId = orderDAO.insertOrder(order);
+        
+        if (orderId > 0) {
+            // Order successfully saved
+            order.setOrderId(orderId);
+            
+            // Add to static list for tracking
+            allOrders.add(order);
+            
+            // Show success message
+            showAlert("Success", "Order placed successfully! Order ID: " + orderId);
+            
+            // Clear cart
+            cartItems.clear();
+            updateCartDisplay();
+            updateCartSummary();
+            
+            // Clear notes
+            notesTextArea.clear();
+        } else {
+            showAlert("Error", "Failed to place order. Please try again.");
+        }
     }
 
     @FXML
@@ -451,28 +462,40 @@ public class CustomerViewController implements Initializable {
         }
     }
 
-    private void handlePlaceOrder() {
-        if (cartItems.isEmpty()) {
-            showAlert("Empty Cart", "Your cart is empty. Please add items before placing an order.");
-            return;
-        }
+    @FXML
+    void goToWelcome(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("welcome.fxml"));
+            if (loader.getLocation() == null) {
+                System.err.println("Error: welcome.fxml not found in resources");
+                showAlert("Error", "Cannot load Welcome page. Resource not found.");
+                return;
+            }
 
-        String notes = notesTextArea.getText();
-        Order order = new Order(new ArrayList<>(cartItems.values()), total, deliveryPartnerComboBox.getValue(), notes);
-        OrderDAO orderDAO = new OrderDAO();
-        int orderId = orderDAO.createOrder(order);
+            Parent root = loader.load();
 
-        if (orderId > 0) {
-            showAlert("Order Placed", "Your order has been placed successfully. Order ID: " + orderId);
-            cartItems.clear();
-            menuSpinners.values().forEach(spinner -> spinner.getValueFactory().setValue(0));
-            updateCartDisplay();
-            updateCartSummary();
-            notesTextArea.clear();
-        } else {
-            showAlert("Error", "Failed to place order. Please try again.");
-        }
+            // Create new scene
+            Scene scene = new Scene(root, 1000, 700); // Set exact size to match welcome.fxml
+            scene.getStylesheets().add(getClass().getResource("/menu-style.css").toExternalForm()); // Add CSS
+
+            Stage stage = (Stage) placeOrderBtn.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Welcome to ROMS");
+            
+            // Apply stage settings and enforce exact size
+        StageManager.applyStageSettings(stage);
+        stage.setWidth(1000);
+        stage.setHeight(700);
+        stage.setResizable(false); // Prevent resizing to avoid layout issues
+        stage.centerOnScreen(); // Ensure stage is centered
+        stage.show();
+
+    } catch (IOException e) {
+        System.err.println("Error loading welcome page: " + e.getMessage());
+        e.printStackTrace();
+        showAlert("Error", "Failed to load Welcome page: " + e.getMessage());
     }
+}
 
     private void updateCart() {
         cartItemsContainer.getChildren().clear();

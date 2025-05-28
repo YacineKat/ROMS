@@ -76,6 +76,8 @@ public class AdminLoginController {
             stage.setScene(scene);
             stage.setTitle("Restaurant Customer View");
             StageManager.applyStageSettings(stage);
+            stage.setWidth(1100);
+            stage.setHeight(800);
             stage.show();
         } catch (IOException e) {
             errorLabel.setText("Error loading customer view: " + e.getMessage());

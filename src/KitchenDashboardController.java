@@ -224,10 +224,13 @@ public class KitchenDashboardController implements Initializable {
     }
 
     private void loadOrders() {
-        // Get orders from the CustomerViewController
-        List<Order> existingOrders = CustomerViewController.getAllOrders();
-        orders.addAll(existingOrders);
-
+        // Clear existing orders
+        orders.clear();
+        
+        // Load orders from database
+        List<Order> dbOrders = orderDAO.getAllOrders();
+        orders.addAll(dbOrders);
+        
         // If no orders exist yet, create some sample orders
         if (orders.isEmpty()) {
             createSampleOrders();
@@ -362,30 +365,18 @@ public class KitchenDashboardController implements Initializable {
         Thread refreshThread = new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(30000); // 30 seconds
-
-                    // Update UI on JavaFX thread
+                    Thread.sleep(30000); // Sleep for 30 seconds
                     Platform.runLater(() -> {
-                        // Refresh orders from CustomerViewController
-                        List<Order> currentOrders = CustomerViewController.getAllOrders();
-
-                        // Add any new orders that aren't in our list
-                        for (Order newOrder : currentOrders) {
-                            if (!orders.contains(newOrder)) {
-                                orders.add(newOrder);
-                            }
-                        }
-
-                        ordersTable.refresh();
+                        loadOrders(); // Refresh orders from database
+                        checkLowStockIngredients(); // Also check inventory
                     });
                 } catch (InterruptedException e) {
-                    // Thread interrupted
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }
         });
-
-        refreshThread.setDaemon(true); // Make it a daemon thread so it doesn't prevent app exit
+        refreshThread.setDaemon(true);
         refreshThread.start();
     }
 
@@ -513,9 +504,14 @@ public class KitchenDashboardController implements Initializable {
     }
 
     private void updateOrderStatus(Order order, Order.OrderStatus newStatus) {
-        order.setStatus(newStatus);
-        orderDAO.updateOrderStatus(order.getOrderId(), newStatus);
-        refreshOrdersTable();
+        // Update status in database
+        if (orderDAO.updateOrderStatus(order.getOrderId(), newStatus)) {
+            order.setStatus(newStatus);
+            ordersTable.refresh(); // Refresh the table to show updated status
+            showAlert(AlertType.INFORMATION, "Success", "Order status updated successfully!");
+        } else {
+            showAlert(AlertType.ERROR, "Error", "Failed to update order status!");
+        }
     }
 
     private void handleOrderItemClick(Order.OrderItem orderItem) {

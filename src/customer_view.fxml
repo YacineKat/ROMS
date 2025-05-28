@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
@@ -37,6 +38,22 @@
                      </VBox.margin>
                   </Label>
                   <ComboBox fx:id="deliveryPartnerComboBox" prefHeight="35.0" prefWidth="260.0" promptText="Select delivery partner" style="-fx-background-color: white; -fx-border-color: #3498db; -fx-border-radius: 4;" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="80.0" prefWidth="300.0" spacing="5.0">
+               <children>
+                  <Label text="Order Notes:" textFill="#2c3e50">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextArea fx:id="notesTextArea" prefHeight="60.0" prefWidth="260.0" promptText="Add any special instructions here..." style="-fx-background-color: white; -fx-border-color: #3498db; -fx-border-radius: 4;" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="5.0" top="5.0" />
@@ -146,11 +163,16 @@
                         </TextField>
                         <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="530.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#goToAdminLogin" style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-border-color: #3498db; -fx-border-radius: 4;" text="Admin Login">
+                              <Button mnemonicParsing="false" onAction="#goToWelcome" style="-fx-background-color: transparent; -fx-text-fill: red; -fx-border-color: red; -fx-border-radius: 4;" text="Back to Welcome">
+                                 <HBox.margin>
+                                    <Insets right="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <!-- <Button mnemonicParsing="false" onAction="#goToAdminLogin" style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-border-color: #3498db; -fx-border-radius: 4;" text="Admin Login">
                                  <HBox.margin>
                                     <Insets right="20.0" />
                                  </HBox.margin>
-                              </Button>
+                              </Button> -->
                            </children>
                         </HBox>
                      </children>

@@ -70,4 +70,21 @@ public class WelcomeController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    @FXML
+    private void goToAdminLogin(ActionEvent event) {
+        try {
+            Parent nextPage = FXMLLoader.load(getClass().getResource("admin_login.fxml"));
+            Scene nextScene = new Scene(nextPage);
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.setScene(nextScene);
+            StageManager.applyStageSettings(currentStage);
+            currentStage.setWidth(1100);
+            currentStage.setHeight(800);
+            currentStage.centerOnScreen();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error loading admin login: " + e.getMessage());
+        }
+    }
 }

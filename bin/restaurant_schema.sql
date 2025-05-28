@@ -1,15 +1,17 @@
--- MySQL Schema for Restaurant Management System
-
 -- Create the database
 CREATE DATABASE IF NOT EXISTS restaurant_db;
 USE restaurant_db;
 
--- Create the Staff table (combines Manager and Kitchen staff)
+-- Modified Staff table to include Admins and authentication fields
 CREATE TABLE Staff (
-    staff_id VARCHAR(50) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    role ENUM('manager', 'kitchen_staff') NOT NULL,
-    kitchen_id INT UNIQUE
+    staff_id INT PRIMARY KEY AUTO_INCREMENT, -- Changed to auto-incrementing integer for simplicity
+    username VARCHAR(50) UNIQUE NOT NULL,   -- Unique username for login
+    password VARCHAR(255) NOT NULL,         -- Password (hashed in production)
+    name VARCHAR(100) NOT NULL,             -- Staff name
+    role ENUM('admin', 'manager', 'kitchen_staff') NOT NULL, -- Added 'admin' role
+    kitchen_id INT UNIQUE,                  -- For kitchen staff, nullable for admins/managers
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Create Category table
@@ -49,14 +51,14 @@ CREATE TABLE Supplier (
     address VARCHAR(255)
 );
 
--- Create Purchase Order table (simplified)
+-- Create Purchase Order table
 CREATE TABLE Purchase_Order (
     po_id INT PRIMARY KEY AUTO_INCREMENT,
     supplier_id INT NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('draft', 'ordered', 'completed', 'cancelled') DEFAULT 'draft',
     total_amount DECIMAL(10,2),
-    created_by VARCHAR(50),
+    created_by INT,
     FOREIGN KEY (supplier_id) REFERENCES Supplier(supplier_id),
     FOREIGN KEY (created_by) REFERENCES Staff(staff_id)
 );
@@ -75,12 +77,15 @@ CREATE TABLE `Order` (
     status VARCHAR(50) NOT NULL,
     date DATE NOT NULL,
     customer_id INT,
-    staff_id VARCHAR(50),
+    staff_id INT,
+    kitchen_id INT,
+    notes TEXT,
     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-    FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
+    FOREIGN KEY (staff_id) REFERENCES Staff(staff_id),
+    FOREIGN KEY (kitchen_id) REFERENCES Staff(kitchen_id)
 );
 
--- Create Order_Items table (simplified)
+-- Create Order_Items table
 CREATE TABLE Order_Items (
     order_id INT,
     item_id INT,
@@ -100,20 +105,30 @@ CREATE TABLE feedback (
     submission_date TIMESTAMP NOT NULL
 );
 
--- Create trigger to update ingredient quantities when orders are placed
+-- Create MenuItem_Ingredient table
+CREATE TABLE MenuItem_Ingredient (
+    item_id INT,
+    ingredient_title VARCHAR(100),
+    quantity DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (item_id, ingredient_title),
+    FOREIGN KEY (item_id) REFERENCES MenuItem(item_id),
+    FOREIGN KEY (ingredient_title) REFERENCES Ingredient(title)
+);
+
+-- Trigger to update ingredient quantities
 DELIMITER //
 CREATE TRIGGER update_ingredients_after_order
 AFTER INSERT ON Order_Items
 FOR EACH ROW
 BEGIN
     UPDATE Ingredient i
-    JOIN MenuItem mi ON mi.item_id = NEW.item_id
+    JOIN MenuItem_Ingredient mi ON mi.ingredient_title = i.title
     SET i.current_quantity = i.current_quantity - (NEW.quantity * mi.quantity),
         i.last_updated = CURRENT_TIMESTAMP
-    WHERE i.title IN (
-        SELECT ingredient_title 
-        FROM MenuItem_Ingredient 
-        WHERE item_id = NEW.item_id
-    );
+    WHERE mi.item_id = NEW.item_id;
 END //
 DELIMITER ;
+
+-- Insert default Admin user (password should be hashed in production)
+INSERT INTO Staff (username, password, name, role)
+VALUES ('admin', 'admin', 'Administrator', 'admin');
