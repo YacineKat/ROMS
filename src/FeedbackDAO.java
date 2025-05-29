@@ -1,59 +1,52 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+package com.restaurant.roms;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Timestamp;
 
 public class FeedbackDAO {
+    private Connection connection;
+
+    public FeedbackDAO() {
+        try {
+            connection = DatabaseConnection.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<Feedback> getAllFeedback() throws SQLException {
-        List<Feedback> feedbackList = new ArrayList<>();
-        String sql = "SELECT * FROM feedback ORDER BY submission_date DESC";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
-
+        List<Feedback> feedbacks = new ArrayList<>();
+        String query = "SELECT * FROM feedback ORDER BY submission_date DESC";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            
             while (rs.next()) {
                 Feedback feedback = new Feedback();
                 feedback.setId(rs.getInt("id"));
                 feedback.setCustomerName(rs.getString("name"));
-                feedback.setRating(rs.getInt("rating"));
+                feedback.setPhone(rs.getString("phone"));
                 feedback.setComment(rs.getString("comment"));
-                Timestamp timestamp = rs.getTimestamp("submission_date");
-                feedback.setDate(timestamp != null ? timestamp.toString() : "");
-                feedbackList.add(feedback);
+                feedback.setRating(rs.getInt("rating"));
+                feedback.setDate(rs.getString("submission_date"));
+                feedbacks.add(feedback);
             }
-        } catch (SQLException e) {
-            System.err.println("Error retrieving feedback: " + e.getMessage());
-            throw e;
         }
-        return feedbackList;
+        return feedbacks;
     }
 
     public boolean deleteFeedback(int feedbackId) throws SQLException {
-        String sql = "DELETE FROM feedback WHERE id = ?";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
-            pstmt.setInt(1, feedbackId);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            System.err.println("Error deleting feedback: " + e.getMessage());
-            throw e;
+        String query = "DELETE FROM feedback WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, feedbackId);
+            return stmt.executeUpdate() > 0;
         }
     }
 
     public void addFeedback(Feedback feedback) throws SQLException {
         String sql = "INSERT INTO feedback (name, phone, comment, rating, submission_date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, feedback.getCustomerName());
             pstmt.setString(2, ""); // Since phone is required in DB but not in our model
             pstmt.setString(3, feedback.getComment());

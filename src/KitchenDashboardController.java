@@ -36,6 +36,13 @@ import javafx.util.Callback;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
+import com.restaurant.roms.Order;
+import com.restaurant.roms.OrderDAO;
+import com.restaurant.roms.MenuItem;
+import com.restaurant.roms.CartItem;
+import com.restaurant.roms.MenuItemIngredient;
+import com.restaurant.roms.Ingredient;
 
 public class KitchenDashboardController implements Initializable {
 
@@ -45,9 +52,9 @@ public class KitchenDashboardController implements Initializable {
     @FXML
     private TableColumn<Order, Integer> orderIdColumn;
     @FXML
-    private TableColumn<Order, String> orderDateColumn;
+    private TableColumn<Order, String> orderTimeColumn;
     @FXML
-    private TableColumn<Order, String> orderItemsColumn;
+    private TableColumn<Order, String> itemsColumn;
     @FXML
     private TableColumn<Order, String> deliveryPartnerColumn;
     @FXML
@@ -132,13 +139,49 @@ public class KitchenDashboardController implements Initializable {
     private void setupOrdersTable() {
         orderIdColumn.setCellValueFactory(
                 cellData -> new SimpleIntegerProperty(cellData.getValue().getOrderId()).asObject());
-        orderDateColumn
+        orderTimeColumn
                 .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().toString()));
-        orderItemsColumn
+        itemsColumn
                 .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getItemsSummary()));
         deliveryPartnerColumn
                 .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getManagerId()));
         statusColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getStatus()));
+
+        // Add actions column with buttons
+        actionsColumn.setCellFactory(param -> new TableCell<Order, Void>() {
+            private final Button updateStatusBtn = new Button("Update Status");
+            private final Button viewDetailsBtn = new Button("Details");
+            private final HBox pane = new HBox(5, updateStatusBtn, viewDetailsBtn);
+
+            {
+                updateStatusBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white;");
+                viewDetailsBtn.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white;");
+
+                updateStatusBtn.setOnAction(event -> {
+                    Order order = getTableView().getItems().get(getIndex());
+                    handleOrderStatusChange(order);
+                });
+
+                viewDetailsBtn.setOnAction(event -> {
+                    Order order = getTableView().getItems().get(getIndex());
+                    showOrderDetails(order);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : pane);
+            }
+        });
+
+        // Handle row selection
+        ordersTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                selectedOrder = newSelection;
+                populateOrderDetails(selectedOrder);
+            }
+        });
 
         refreshOrdersTable();
     }
@@ -529,9 +572,13 @@ public class KitchenDashboardController implements Initializable {
     }
 
     private void refreshOrdersTable() {
-        List<Order> orders = orderDAO.getOrdersByStatus(Order.OrderStatus.QUEUED);
-        orders.addAll(orderDAO.getOrdersByStatus(Order.OrderStatus.IN_PROGRESS));
-        ordersTable.setItems(FXCollections.observableArrayList(orders));
+        try {
+            List<Order> orders = orderDAO.getOrdersByStatus(Order.OrderStatus.QUEUED);
+            orders.addAll(orderDAO.getOrdersByStatus(Order.OrderStatus.IN_PROGRESS));
+            ordersTable.setItems(FXCollections.observableArrayList(orders));
+        } catch (java.sql.SQLException e) {
+            showAlert(AlertType.ERROR, "Database Error", "Failed to load orders: " + e.getMessage());
+        }
     }
 
     private void handleOrderStatusChange(Order order) {
@@ -548,5 +595,33 @@ public class KitchenDashboardController implements Initializable {
             default:
                 break;
         }
+    }
+
+    private void showOrderDetails(Order order) {
+        StringBuilder details = new StringBuilder();
+        details.append("Order ID: ").append(order.getOrderId()).append("\n");
+        details.append("Date: ").append(order.getDate()).append("\n");
+        details.append("Status: ").append(order.getStatus()).append("\n");
+        details.append("Delivery Partner: ").append(order.getManagerId()).append("\n\n");
+        details.append("Items:\n");
+        
+        for (Order.OrderItem item : order.getItems()) {
+            details.append("- ").append(item.getQuantity())
+                  .append("x ").append(item.getMenuItem().getTitle())
+                  .append(" ($").append(String.format("%.2f", item.getMenuItem().getPrice()))
+                  .append(")\n");
+        }
+        
+        details.append("\nTotal: $").append(String.format("%.2f", order.getTotal()));
+        
+        if (!order.getNotes().isEmpty()) {
+            details.append("\n\nNotes: ").append(order.getNotes());
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Order Details");
+        alert.setHeaderText("Order #" + order.getOrderId());
+        alert.setContentText(details.toString());
+        alert.showAndWait();
     }
 }

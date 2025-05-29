@@ -7,15 +7,16 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import java.net.URL;
+import com.restaurant.roms.StageManager;
 
 public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         try {
             // Load splash screen
-            URL splashUrl = getClass().getResource("splashE.fxml");
+            URL splashUrl = getClass().getResource("splash.fxml");
             if (splashUrl == null) {
-                System.err.println("Error: splashE.fxml not found!");
+                System.err.println("Error: splash.fxml not found!");
                 return;
             }
             Parent splashRoot = FXMLLoader.load(splashUrl);

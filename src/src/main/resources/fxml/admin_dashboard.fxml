@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.DropShadow?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+    prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #f0f2f5;" 
+    xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="src.AdminDashboardController">
+    
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #1a237e; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Admin Dashboard" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets left="30.0" />
+                    </HBox.margin>
+                </Label>
+                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#handleKitchenDashboard" 
+                            style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px;" 
+                            text="Kitchen Dashboard">
+                            <HBox.margin>
+                                <Insets right="20.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#handleBackToCustomerView" 
+                            style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px;" 
+                            text="View as Customer">
+                            <HBox.margin>
+                                <Insets right="20.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#handleLogout" 
+                            style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-size: 14px;" 
+                            text="Logout">
+                            <HBox.margin>
+                                <Insets right="30.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </HBox>
+    </top>
+    
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;">
+            <VBox spacing="20" style="-fx-padding: 20;">
+                <!-- Manager Management Section -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <children>
+                        <Label text="Manager Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
+                            <Button fx:id="addManagerButton" text="Add Manager" 
+                                style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                            <Button fx:id="deleteManagerButton" text="Delete Manager" 
+                                style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                        </HBox>
+                        <TableView fx:id="managersTable" VBox.vgrow="ALWAYS" style="-fx-background-radius: 5;">
+                            <columns>
+                                <TableColumn fx:id="managerIdColumn" text="ID" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="managerNameColumn" text="Name" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="managerUsernameColumn" text="Username" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="managerEmailColumn" text="Email" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="managerPhoneColumn" text="Phone" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="managerCreatedAtColumn" text="Created At" style="-fx-font-size: 14px;"/>
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+
+                <!-- Menu Management Section -->
+                <HBox spacing="20">
+                    <!-- Add/Edit Item Form -->
+                    <VBox prefWidth="400" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                        <children>
+                            <Label text="Menu Item Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+                            
+                            <Label text="Item Name" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                            <TextField fx:id="menuNameField" promptText="Enter item name" style="-fx-font-size: 14px;"/>
+                            
+                            <Label text="Price" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                            <TextField fx:id="menuPriceField" promptText="Enter price" style="-fx-font-size: 14px;"/>
+                            
+                            <Label text="Category" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                            <ComboBox fx:id="categoryComboBox" promptText="Select category" style="-fx-font-size: 14px;"/>
+                            
+                            <Label text="Image Path" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                            <HBox spacing="10">
+                                <TextField fx:id="imagePathField" promptText="Image path" HBox.hgrow="ALWAYS" style="-fx-font-size: 14px;"/>
+                                <Button fx:id="browseImageButton" text="Browse" style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                            </HBox>
+                            
+                            <Label fx:id="statusLabel" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
+                            
+                            <HBox spacing="10" alignment="CENTER">
+                                <Button fx:id="addButton" text="Add" 
+                                    style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                                <Button fx:id="updateButton" text="Update" 
+                                    style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                                <Button fx:id="deleteButton" text="Delete" 
+                                    style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                                <Button fx:id="clearButton" text="Clear" 
+                                    style="-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                            </HBox>
+                        </children>
+                    </VBox>
+
+                    <!-- Menu Items Table -->
+                    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                        <children>
+                            <Label text="Menu Items" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+                            <TableView fx:id="menuItemsTable" VBox.vgrow="ALWAYS" style="-fx-background-radius: 5;">
+                                <columns>
+                                    <TableColumn fx:id="idColumn" text="ID" style="-fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="nameColumn" text="Name" style="-fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="priceColumn" text="Price" style="-fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="categoryColumn" text="Category" style="-fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="imagePathColumn" text="Image Path" style="-fx-font-size: 14px;"/>
+                                </columns>
+                            </TableView>
+                        </children>
+                    </VBox>
+                </HBox>
+
+                <!-- Customer Feedback Section -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <children>
+                        <Label text="Customer Feedback" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1a237e;"/>
+                        <TableView fx:id="feedbackTable" VBox.vgrow="ALWAYS" style="-fx-background-radius: 5;">
+                            <columns>
+                                <TableColumn fx:id="feedbackIdColumn" text="ID" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="customerNameColumn" text="Customer Name" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="ratingColumn" text="Rating" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="commentColumn" text="Comment" style="-fx-font-size: 14px;"/>
+                                <TableColumn fx:id="dateColumn" text="Date" style="-fx-font-size: 14px;"/>
+                            </columns>
+                        </TableView>
+                        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10 0;">
+                            <Button fx:id="refreshFeedbackButton" text="Refresh" 
+                                style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                            <Button fx:id="deleteFeedbackButton" text="Delete" 
+                                style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                        </HBox>
+                    </children>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane> 

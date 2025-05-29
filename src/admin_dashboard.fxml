@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #f8f9fa;" xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AdminDashboardController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #f8f9fa;" xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurant.roms.AdminDashboardController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="200.0" style="-fx-background-color: #2c3e50;" BorderPane.alignment="CENTER">
          <children>
@@ -191,6 +191,43 @@
                                  </font>
                               </Button>
                               <Button fx:id="deleteFeedbackButton" mnemonicParsing="false" onAction="#handleDeleteFeedback" prefHeight="36.0" prefWidth="120.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 4;" text="Delete">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                        
+                        <Label text="Manager Management" textFill="#2c3e50">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="10.0" top="20.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TableView fx:id="managersTable" prefHeight="200.0" prefWidth="600.0" style="-fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="managerIdColumn" prefWidth="50.0" text="ID" />
+                            <TableColumn fx:id="managerUsernameColumn" prefWidth="120.0" text="Username" />
+                            <TableColumn fx:id="managerNameColumn" prefWidth="150.0" text="Name" />
+                            <TableColumn fx:id="managerEmailColumn" prefWidth="280.0" text="Email" />
+                          </columns>
+                           <VBox.margin>
+                              <Insets bottom="20.0" />
+                           </VBox.margin>
+                        </TableView>
+                        <HBox alignment="CENTER" spacing="10.0">
+                           <children>
+                              <Button fx:id="addManagerButton" mnemonicParsing="false" onAction="#handleAddManager" prefHeight="36.0" prefWidth="120.0" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 4;" text="Add Manager">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="deleteManagerButton" mnemonicParsing="false" onAction="#handleDeleteManager" prefHeight="36.0" prefWidth="120.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 4;" text="Delete Manager">
                                  <font>
                                     <Font name="System Bold" size="12.0" />
                                  </font>

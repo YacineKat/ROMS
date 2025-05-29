@@ -1,3 +1,5 @@
+package com.restaurant.roms;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,10 +18,9 @@ public class OrderDAO {
 
     public OrderDAO() {
         try {
-            this.connection = DatabaseConnection.getConnection();
+            connection = DatabaseConnection.getConnection();
         } catch (SQLException e) {
-            System.err.println("Error establishing database connection: " + e.getMessage());
-            throw new RuntimeException("Failed to initialize OrderDAO", e);
+            e.printStackTrace();
         }
     }
 
@@ -38,8 +39,8 @@ public class OrderDAO {
 
             // Insert the order first
             try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                pstmt.setString(1, order.getStatus().toString());
-                pstmt.setDate(2, new Date(System.currentTimeMillis())); // Current date
+                pstmt.setString(1, order.getStatus().name());
+                pstmt.setString(2, order.getDate());
                 pstmt.setInt(3, order.getCustomerId());
 
                 // Kitchen ID is optional
@@ -135,7 +136,7 @@ public class OrderDAO {
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
-            pstmt.setString(1, status.toString());
+            pstmt.setString(1, status.name());
             pstmt.setInt(2, orderId);
 
             int affectedRows = pstmt.executeUpdate();
@@ -165,9 +166,9 @@ public class OrderDAO {
                     Order order = new Order();
                     order.setOrderId(rs.getInt("order_id"));
                     order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
-                    order.setDate(new java.sql.Date(rs.getTimestamp("date").getTime()));
+                    order.setDate(rs.getString("date"));
                     order.setCustomerId(rs.getInt("customer_id"));
-                    order.setStaffId(rs.getInt("staff_id"));
+                    order.setStaffId(rs.getString("staff_id"));
                     order.setKitchenId(rs.getInt("kitchen_id"));
                     order.setManagerId(rs.getString("manager_id"));
                     order.setNotes(rs.getString("notes"));
@@ -233,7 +234,7 @@ public class OrderDAO {
                 Order order = new Order();
                 order.setOrderId(orderId);
                 order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
-                order.setDate(rs.getDate("date"));
+                order.setDate(rs.getString("date"));
                 order.setCustomerId(rs.getInt("customer_id"));
                 order.setNotes(rs.getString("notes"));
 
@@ -258,31 +259,54 @@ public class OrderDAO {
      * @param status The status to filter by
      * @return A list of orders with the specified status
      */
-    public List<Order> getOrdersByStatus(Order.OrderStatus status) {
+    public List<Order> getOrdersByStatus(Order.OrderStatus status) throws SQLException {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM `Order` WHERE status = ?";
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setString(1, status.name());
-            ResultSet rs = pstmt.executeQuery();
-
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, status.name());
+            ResultSet rs = stmt.executeQuery();
+            
             while (rs.next()) {
                 Order order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
-                order.setDate(new java.sql.Date(rs.getTimestamp("date").getTime()));
+                order.setDate(rs.getString("date"));
                 order.setCustomerId(rs.getInt("customer_id"));
-                order.setStaffId(rs.getInt("staff_id"));
+                order.setStaffId(rs.getString("staff_id"));
                 order.setKitchenId(rs.getInt("kitchen_id"));
-                order.setManagerId(rs.getString("manager_id"));
                 order.setNotes(rs.getString("notes"));
-                order.setItems(getOrderItems(connection, order.getOrderId()));
+                
+                // Load order items
+                loadOrderItems(order);
                 orders.add(order);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return orders;
+    }
+
+    private void loadOrderItems(Order order) throws SQLException {
+        String query = "SELECT oi.*, mi.* FROM Order_Items oi " +
+                      "JOIN MenuItem mi ON oi.item_id = mi.item_id " +
+                      "WHERE oi.order_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, order.getOrderId());
+            ResultSet rs = stmt.executeQuery();
+            
+            List<Order.OrderItem> items = new ArrayList<>();
+            while (rs.next()) {
+                MenuItem menuItem = new MenuItem();
+                menuItem.setItemId(rs.getInt("item_id"));
+                menuItem.setName(rs.getString("title"));
+                menuItem.setPrice(rs.getDouble("price"));
+                menuItem.setCategory(rs.getString("category_title"));
+                menuItem.setImagePath(rs.getString("image_path"));
+                menuItem.setKitchenId(rs.getInt("kitchen_id"));
+                
+                Order.OrderItem orderItem = new Order.OrderItem(menuItem, rs.getInt("quantity"));
+                items.add(orderItem);
+            }
+            order.setItems(items);
+        }
     }
 
     public int createOrder(Order order) {
@@ -294,9 +318,9 @@ public class OrderDAO {
             conn.setAutoCommit(false);
 
             pstmt.setString(1, order.getStatus().name());
-            pstmt.setTimestamp(2, new java.sql.Timestamp(order.getDate().getTime()));
+            pstmt.setString(2, order.getDate());
             pstmt.setInt(3, order.getCustomerId());
-            pstmt.setInt(4, order.getStaffId());
+            pstmt.setString(4, order.getStaffId());
             pstmt.setInt(5, order.getKitchenId());
             pstmt.setString(6, order.getManagerId());
             pstmt.setString(7, order.getNotes());
@@ -364,9 +388,9 @@ public class OrderDAO {
                 Order order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
-                order.setDate(rs.getDate("date"));
+                order.setDate(rs.getString("date"));
                 order.setCustomerId(rs.getInt("customer_id"));
-                order.setStaffId(rs.getInt("staff_id"));
+                order.setStaffId(rs.getString("staff_id"));
                 order.setItems(getOrderItems(connection, order.getOrderId()));
                 orders.add(order);
             }
@@ -388,9 +412,9 @@ public class OrderDAO {
                 Order order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
-                order.setDate(rs.getDate("date"));
+                order.setDate(rs.getString("date"));
                 order.setCustomerId(rs.getInt("customer_id"));
-                order.setStaffId(rs.getInt("staff_id"));
+                order.setStaffId(rs.getString("staff_id"));
                 order.setItems(getOrderItems(connection, order.getOrderId()));
                 orders.add(order);
             }

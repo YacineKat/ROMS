@@ -1,48 +1,50 @@
+package com.restaurant.roms;
+
 public class MenuItem {
-    private int itemId;
-    private String title;
+    private int id;
+    private String name;
     private double price;
-    private int quantity;
-    private String categoryTitle;
+    private String category;
     private String imagePath;
     private int kitchenId;
+    private String title;
+    private String categoryTitle;
+    private int quantity;
 
-    // Default constructor
-    public MenuItem() {
-        this.quantity = 0;
+    public MenuItem() {}
+
+    public MenuItem(int id, String name, double price, String category, String imagePath) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.imagePath = imagePath;
     }
 
-    // New constructor for database operations
-    public MenuItem(int itemId, String title, double price, String categoryTitle, String imagePath, int kitchenId) {
-        this.itemId = itemId;
-        this.title = title;
+    public MenuItem(int id, String name, double price, String category, String imagePath, int kitchenId) {
+        this.id = id;
+        this.name = name;
         this.price = price;
-        this.quantity = 0;
-        this.categoryTitle = categoryTitle;
+        this.category = category;
         this.imagePath = imagePath;
         this.kitchenId = kitchenId;
     }
 
-    // Legacy constructor for backward compatibility
-    public MenuItem(int itemId, String title, double price, String categoryTitle, String imagePath) {
-        this(itemId, title, price, categoryTitle, imagePath, 0);
+    // Getters and Setters
+    public int getId() {
+        return id;
     }
 
-    // Getters and setters
-    public int getItemId() {
-        return itemId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public String getName() {
+        return name;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getPrice() {
@@ -53,20 +55,12 @@ public class MenuItem {
         this.price = price;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getCategory() {
+        return category;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getCategoryTitle() {
-        return categoryTitle;
-    }
-
-    public void setCategoryTitle(String categoryTitle) {
-        this.categoryTitle = categoryTitle;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getImagePath() {
@@ -85,28 +79,35 @@ public class MenuItem {
         this.kitchenId = kitchenId;
     }
 
-    // Legacy getters for backward compatibility
-    public int getId() {
-        return getItemId();
+    public String getTitle() {
+        return name;
     }
 
-    public String getName() {
-        return getTitle();
+    public void setTitle(String name) {
+        this.name = name;
     }
 
-    public String getCategory() {
-        return getCategoryTitle();
+    public String getCategoryTitle() {
+        return categoryTitle;
     }
 
-    public void setId(int id) {
-        setItemId(id);
+    public void setCategoryTitle(String categoryTitle) {
+        this.categoryTitle = categoryTitle;
     }
 
-    public void setName(String name) {
-        setTitle(name);
+    public int getItemId() {
+        return id;
     }
 
-    public void setCategory(String category) {
-        setCategoryTitle(category);
+    public void setItemId(int id) {
+        this.id = id;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

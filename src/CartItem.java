@@ -1,4 +1,5 @@
- 
+package com.restaurant.roms;
+
 public class CartItem {
     private MenuItem menuItem;
     private int quantity;
@@ -10,12 +11,33 @@ public class CartItem {
         this.total = menuItem.getPrice() * quantity;
     }
 
-    public MenuItem getMenuItem() { return menuItem; }
-    public int getQuantity() { return quantity; }
-    public double getTotal() { return total; }
+    public MenuItem getMenuItem() {
+        return menuItem;
+    }
+
+    public void setMenuItem(MenuItem menuItem) {
+        this.menuItem = menuItem;
+        updateTotal();
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-        this.total = menuItem.getPrice() * quantity;
+        updateTotal();
+    }
+
+    private void updateTotal() {
+        if (menuItem != null) {
+            this.total = menuItem.getPrice() * quantity;
+        } else {
+            this.total = 0;
+        }
+    }
+
+    public double getTotal() {
+        return total;
     }
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javafx.geometry.Pos;
+import com.restaurant.roms.DatabaseConnection;
 
 public class FeedbackDisplayController {
     @FXML

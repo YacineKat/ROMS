@@ -1,4 +1,4 @@
- 
+import com.restaurant.roms.StageManager;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -46,14 +46,14 @@ public class AdminLoginController {
     private void loadDashboard(String fxmlFile, String title) {
         try {
             // Load the dashboard
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlFile));
             Parent root = loader.load();
             
             Scene scene = new Scene(root);
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle(title);
-            stage.setWidth(1500);
+            stage.setWidth(2000);
             StageManager.applyStageSettings(stage);
             stage.centerOnScreen();
             stage.show();

@@ -130,3 +130,22 @@ BEGIN
     );
 END //
 DELIMITER ;
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    is_manager BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default admin user
+INSERT INTO users (username, password, name, email, is_admin, is_manager)
+VALUES ('admin', 'admin', 'System Administrator', 'admin@restaurant.com', true, false);
+
+-- Insert default manager user
+INSERT INTO users (username, password, name, email, is_admin, is_manager)
+VALUES ('manager', 'manager', 'Restaurant Manager', 'manager@restaurant.com', false, true);

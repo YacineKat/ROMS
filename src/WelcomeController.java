@@ -1,3 +1,5 @@
+package com.restaurant.roms;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +19,7 @@ public class WelcomeController {
     @FXML
     private void handleStart(ActionEvent event) {
         try {
-            Parent nextPage = FXMLLoader.load(getClass().getResource("customer_view.fxml"));
+            Parent nextPage = FXMLLoader.load(getClass().getResource("/customer_view.fxml"));
             Scene nextScene = new Scene(nextPage);
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             currentStage.setScene(nextScene);
@@ -33,7 +35,7 @@ public class WelcomeController {
     @FXML
     private void handleFeedback(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("feedback_form.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/feedback_form.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
@@ -49,7 +51,7 @@ public class WelcomeController {
     @FXML
     private void handleViewReviews(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("feedback_display.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/feedback_display.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
@@ -72,19 +74,50 @@ public class WelcomeController {
     }
 
     @FXML
+    private void goToCustomerView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/customer_view.fxml"));
+            Parent root = loader.load();
+            
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Restaurant Customer View");
+            
+            // Initialize stage before showing
+            StageManager.initializeStage(stage);
+            stage.show();
+            
+            // Close current window
+            Stage currentStage = (Stage) root.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException e) {
+            System.err.println("Error loading customer view: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void goToAdminLogin(ActionEvent event) {
         try {
-            Parent nextPage = FXMLLoader.load(getClass().getResource("admin_login.fxml"));
-            Scene nextScene = new Scene(nextPage);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin_login.fxml"));
+            Parent root = loader.load();
+            
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Admin Login");
+            
+            // Initialize stage before showing
+            StageManager.initializeStage(stage);
+            stage.show();
+            
+            // Close current window
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            currentStage.setScene(nextScene);
-            StageManager.applyStageSettings(currentStage);
-            currentStage.setWidth(1100);
-            currentStage.setHeight(800);
-            currentStage.centerOnScreen();
-        } catch (Exception e) {
+            currentStage.close();
+        } catch (IOException e) {
+            System.err.println("Error loading admin login: " + e.getMessage());
             e.printStackTrace();
-            showAlert("Error loading admin login: " + e.getMessage());
         }
     }
 }

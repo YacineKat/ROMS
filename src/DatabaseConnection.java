@@ -1,7 +1,11 @@
+package com.restaurant.roms;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Database connection utility class for the Restaurant Operations Management
@@ -9,12 +13,14 @@ import java.sql.SQLException;
  * Provides methods to connect to and disconnect from the MySQL database.
  */
 public class DatabaseConnection {
-    // Database connection parameters
+    private static final Logger LOGGER = Logger.getLogger(DatabaseConnection.class.getName());
     private static final String DB_URL = "jdbc:mysql://localhost:3306/restaurant_db";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "root"; // Set your database password here
-
+    private static final String USER = "root";
+    private static final String PASS = "root";
     private static Connection connection = null;
+    private static int connectionAttempts = 0;
+    private static final int MAX_RETRIES = 3;
+    private static final int RETRY_DELAY_MS = 1000;
 
     /**
      * Get a connection to the database.
@@ -25,21 +31,44 @@ public class DatabaseConnection {
      * @throws SQLException if a database access error occurs
      */
     public static Connection getConnection() throws SQLException {
-        try {
-            if (connection == null || connection.isClosed()) {
-                // Load the MySQL driver
-                Class.forName("com.mysql.cj.jdbc.Driver");
+        if (connection != null && !connection.isClosed()) {
+            return connection;
+        }
 
-                // Establish the connection
-                connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                System.out.println("Database connection established successfully");
-            }
+        try {
+            // Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Set connection properties
+            Properties props = new Properties();
+            props.setProperty("user", USER);
+            props.setProperty("password", PASS);
+            props.setProperty("useSSL", "false");
+            props.setProperty("autoReconnect", "true");
+            props.setProperty("maxReconnects", "3");
+            
+            // Attempt to establish connection
+            connection = DriverManager.getConnection(DB_URL, props);
+            connectionAttempts = 0; // Reset attempts on successful connection
+            LOGGER.info("Database connection established successfully");
             return connection;
         } catch (ClassNotFoundException e) {
-            throw new SQLException("MySQL JDBC Driver not found", e);
+            LOGGER.log(Level.SEVERE, "MySQL JDBC Driver not found", e);
+            throw new SQLException("Database driver not found", e);
         } catch (SQLException e) {
-            System.err.println("Database connection error: " + e.getMessage());
-            throw e;
+            connectionAttempts++;
+            LOGGER.log(Level.WARNING, "Failed to connect to database (Attempt " + connectionAttempts + ")", e);
+            
+            if (connectionAttempts < MAX_RETRIES) {
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                    return getConnection(); // Retry connection
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new SQLException("Connection retry interrupted", ie);
+                }
+            }
+            throw new SQLException("Failed to connect to database after " + MAX_RETRIES + " attempts", e);
         }
     }
 
@@ -50,9 +79,9 @@ public class DatabaseConnection {
         if (connection != null) {
             try {
                 connection.close();
-                System.out.println("Database connection closed");
+                LOGGER.info("Database connection closed successfully");
             } catch (SQLException e) {
-                System.err.println("Error closing database connection: " + e.getMessage());
+                LOGGER.log(Level.WARNING, "Error closing database connection", e);
             } finally {
                 connection = null;
             }
@@ -66,13 +95,26 @@ public class DatabaseConnection {
      */
     public static boolean testConnection() {
         try {
-            getConnection();
-            return true;
+            Connection conn = getConnection();
+            boolean isValid = conn != null && !conn.isClosed();
+            if (isValid) {
+                LOGGER.info("Database connection test successful");
+            }
+            return isValid;
         } catch (SQLException e) {
-            System.err.println("Connection test failed: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Database connection test failed", e);
             return false;
-        } finally {
-            closeConnection();
+        }
+    }
+
+    // Add a method to check if the database is accessible
+    public static boolean isDatabaseAccessible() {
+        try {
+            Connection conn = getConnection();
+            return conn != null && !conn.isClosed();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Database is not accessible", e);
+            return false;
         }
     }
 }

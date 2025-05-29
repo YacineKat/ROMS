@@ -1,13 +1,25 @@
+package com.restaurant.roms;
+
 public class Feedback {
     private int id;
     private String customerName;
-    private int rating;
+    private String phone;
     private String comment;
+    private int rating;
     private String date;
 
-    public Feedback() {
+    public Feedback() {}
+
+    public Feedback(int id, String customerName, String phone, String comment, int rating, String date) {
+        this.id = id;
+        this.customerName = customerName;
+        this.phone = phone;
+        this.comment = comment;
+        this.rating = rating;
+        this.date = date;
     }
 
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -24,12 +36,12 @@ public class Feedback {
         this.customerName = customerName;
     }
 
-    public int getRating() {
-        return rating;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getComment() {
@@ -38,6 +50,14 @@ public class Feedback {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public String getDate() {

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="src.ManagerDashboardController">
+    <left>
+        <VBox styleClass="sidebar">
+            <Button text="Dashboard" onAction="#handleDashboard" styleClass="sidebar-button"/>
+            <Button text="Menu Items" onAction="#handleMenuItems" styleClass="sidebar-button"/>
+            <Button text="Feedback" onAction="#handleFeedback" styleClass="sidebar-button"/>
+            <Button text="Update Profile" onAction="#handleUpdateProfile" styleClass="sidebar-button"/>
+            <Button text="Logout" onAction="#handleLogout" styleClass="sidebar-button"/>
+        </VBox>
+    </left>
+    
+    <center>
+        <VBox spacing="20" style="-fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Menu Item Management" textFill="#2c3e50">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+            </HBox>
+            
+            <HBox spacing="20">
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);" prefWidth="400">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <Label text="Item Name" textFill="#7f8c8d"/>
+                    <TextField fx:id="menuNameField" promptText="Enter item name"/>
+                    
+                    <Label text="Price" textFill="#7f8c8d"/>
+                    <TextField fx:id="menuPriceField" promptText="Enter price (e.g. 9.95)"/>
+                    
+                    <Label text="Category" textFill="#7f8c8d"/>
+                    <ComboBox fx:id="categoryComboBox" promptText="Select category"/>
+                    
+                    <Label text="Image Path" textFill="#7f8c8d"/>
+                    <HBox spacing="10">
+                        <TextField fx:id="imagePathField" promptText="Enter image path" HBox.hgrow="ALWAYS"/>
+                        <Button text="Browse"/>
+                    </HBox>
+                    
+                    <Label fx:id="statusLabel" textFill="#2ecc71"/>
+                    
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button text="Add" onAction="#handleAddItem" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
+                        <Button text="Delete" onAction="#handleDeleteItem" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                        <Button text="Clear" onAction="#handleClearForm" style="-fx-background-color: #ecf0f1; -fx-text-fill: #7f8c8d;"/>
+                    </HBox>
+                </VBox>
+                
+                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="menuItemsTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="nameColumn" text="Name" prefWidth="150"/>
+                            <TableColumn fx:id="priceColumn" text="Price" prefWidth="80"/>
+                            <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100"/>
+                            <TableColumn fx:id="imagePathColumn" text="Image Path" prefWidth="220"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </HBox>
+            
+            <VBox spacing="10">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Customer Feedback" textFill="#2c3e50">
+                        <font>
+                            <Font name="System Bold" size="16.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                
+                <TableView fx:id="feedbackTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="feedbackIdColumn" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="customerNameColumn" text="Name" prefWidth="120"/>
+                        <TableColumn fx:id="ratingColumn" text="Rating" prefWidth="80"/>
+                        <TableColumn fx:id="commentColumn" text="Comment" prefWidth="200"/>
+                        <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
+                    </columns>
+                </TableView>
+                
+                <HBox spacing="10" alignment="CENTER">
+                    <Button text="Refresh" onAction="#handleRefreshFeedback" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                    <Button text="Delete" onAction="#handleDeleteFeedback" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane> 

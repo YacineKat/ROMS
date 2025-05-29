@@ -1,4 +1,6 @@
- 
+package com.restaurant.roms;
+
+import com.restaurant.roms.Ingredient;
 
 public class MenuItemIngredient {
     private MenuItem menuItem;

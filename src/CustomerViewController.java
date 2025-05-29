@@ -20,6 +20,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import com.restaurant.roms.MenuItem;
+import com.restaurant.roms.MenuItemDAO;
+import com.restaurant.roms.Order;
+import com.restaurant.roms.OrderDAO;
+import com.restaurant.roms.CartItem;
+import com.restaurant.roms.StageManager;
+import com.restaurant.roms.CustomerDAO;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CustomerViewController implements Initializable {
     @FXML
@@ -90,7 +99,13 @@ public class CustomerViewController implements Initializable {
 
         // Load categories from database
         MenuItemDAO menuItemDAO = new MenuItemDAO();
-        List<String> categories = menuItemDAO.getAllCategories();
+        List<String> categories;
+        try {
+            categories = menuItemDAO.getAllCategories();
+        } catch (java.sql.SQLException e) {
+            System.err.println("Error loading categories: " + e.getMessage());
+            categories = new ArrayList<>();
+        }
 
         // Add category buttons
         for (String category : categories) {
@@ -416,6 +431,12 @@ public class CustomerViewController implements Initializable {
         List<CartItem> cartItemsList = new ArrayList<>(cartItems.values());
         Order order = new Order(cartItemsList, getTotal(), deliveryPartner, notesTextArea.getText());
         order.setCustomerId(customerId);
+        order.setStatus(Order.OrderStatus.QUEUED);
+        
+        // Set current date
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        order.setDate(now.format(formatter));
         
         // Save order to database
         OrderDAO orderDAO = new OrderDAO();
